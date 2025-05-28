@@ -1,6 +1,6 @@
 from src.beyblade_battle_analyzer.constants import *
 from src.beyblade_battle_analyzer.utils.common import read_yaml, create_directories
-from src.beyblade_battle_analyzer.entity.config_entity import DataIngestionConfig
+from src.beyblade_battle_analyzer.entity.config_entity import DataIngestionConfig, ModelTrainingConfig
 
 
 class ConfigurationManager:
@@ -34,3 +34,25 @@ class ConfigurationManager:
         )
 
         return data_ingestion_config
+
+    def get_model_training_config(self):
+        """
+        Retrieves the training pipeline configuration.
+
+        :return: TrainingPipelineConfig object containing the configuration settings.
+        """
+        config = self.config.model_training
+        create_directories([config.root_dir])
+
+        training_pipeline_config = ModelTrainingConfig(
+            root_dir=config.root_dir,
+            weight_models_dir=config.weight_models_dir,
+            yaml_path=config.yaml_path,
+            weight_model=config.weight_model,
+            epochs=config.epochs,
+            patience=config.patience,
+            image_size=config.image_size,
+            project_name=config.project_name
+        )
+
+        return training_pipeline_config

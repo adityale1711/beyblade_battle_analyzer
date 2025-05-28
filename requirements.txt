@@ -1,3 +1,4 @@
 roboflow
 ensure
 python-box
+ultralytics

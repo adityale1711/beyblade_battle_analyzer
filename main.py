@@ -2,6 +2,7 @@ import argparse
 
 from src.beyblade_battle_analyzer import logger
 from src.beyblade_battle_analyzer.pipelines.data_ingestion_pipeline import DataIngestionPipeline
+from src.beyblade_battle_analyzer.pipelines.model_training_pipeline import ModelTrainingPipeline
 
 
 def parse_args():
@@ -25,6 +26,9 @@ def main():
     try:
         data_ingestion = DataIngestionPipeline()
         data_ingestion.run()
+
+        model_training = ModelTrainingPipeline()
+        model_training.run()
     except Exception as e:
         logger.exception(f'Error occurred: {e}')
         raise e

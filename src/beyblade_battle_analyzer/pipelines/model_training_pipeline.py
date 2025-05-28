@@ -2,46 +2,44 @@ import shutil
 
 from src.beyblade_battle_analyzer import logger
 from src.beyblade_battle_analyzer.config.configuration import ConfigurationManager
-from src.beyblade_battle_analyzer.components.data_ingestion import DataIngestion
+from src.beyblade_battle_analyzer.components.model_training import ModelTraining
 
 
-STAGE_NAME = "Data Ingestion Stage"
-class DataIngestionPipeline:
+STAGE_NAME = "Model Training Stage"
+class ModelTrainingPipeline:
     def __init__(self):
         pass
 
-    def initiate_data_ingestion(self):
+    def initiate_model_training(self):
         """
-        Initiates the data ingestion process by reading the configuration and downloading the dataset.
+        Initiates the model training process.
         """
         try:
             # Initialize the configuration manager to read the configuration settings
             config_manager = ConfigurationManager()
-            data_ingestion_config = config_manager.get_data_ingestion_config()
+            model_training_config = config_manager.get_model_training_config()
 
-            # Log the data ingestion configuration
-            data_ingestion = DataIngestion(config=data_ingestion_config)
+            # Log the model training configuration
+            model_training = ModelTraining(config=model_training_config)
+            model_training.train_model()
 
-            # Download and configure the dataset
-            dataset = data_ingestion.download_dataset()
-
-            return dataset
+            return model_training
         except Exception as e:
             logger.exception(f'Error occurred in {STAGE_NAME}: {e}')
             raise e
 
     def run(self):
         """
-        Runs the data ingestion pipeline.
+        Runs the model training pipeline.
         """
         try:
             term_width = shutil.get_terminal_size().columns
             separator_length = (term_width - len(STAGE_NAME) - 2) // 2
             print(f"{'=' * separator_length} {STAGE_NAME} {'=' * separator_length}")
-            dataset = self.initiate_data_ingestion()
+            trained_model = self.initiate_model_training()
             print(f"{'=' * separator_length} {STAGE_NAME} {'=' * separator_length}")
 
-            return dataset
+            return trained_model
         except Exception as e:
             logger.exception(f'Error occurred while running the {STAGE_NAME}: {e}')
             raise e

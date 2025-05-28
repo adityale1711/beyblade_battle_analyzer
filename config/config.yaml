@@ -5,3 +5,13 @@ data_ingestion:
   source_url: https://universe.roboflow.com/beyblade-djcpy/beyblade-dtd3d/dataset/14
   roboflow_api_key: r1etVuiNE3pRyNSKgAGM
   dataset_version: yolov11
+
+model_training:
+  root_dir: artifacts/training
+  weight_models_dir: artifacts/training/weights
+  yaml_path: artifacts/data_ingestion/Beyblade-14/data.yaml
+  weight_model: yolo11n.pt
+  epochs: 100
+  patience: 25
+  image_size: 640
+  project_name: beyblade_detector

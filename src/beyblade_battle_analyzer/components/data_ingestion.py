@@ -66,38 +66,11 @@ class DataIngestion:
         # Download the dataset using the specified version and save to root_dir
         dataset = version.download(self.config.dataset_version)
 
-        return dataset
-
-    def config_dataset(self):
-        # Download the dataset
-        dataset = self.download_dataset()
-
-        # Check if the dataset directory already exists in the root directory
-        if os.listdir(self.config.root_dir) is not None:
-            dataset_name = None
-            for dataset_path in os.listdir(self.config.root_dir):
-                dataset_name = dataset_path
-
-            dataset_dir = os.path.join(self.config.root_dir, dataset_name)
-        else:
-            # Move the dataset to the root directory specified in the configuration
-            dataset_dir = Path(dataset.location)
-            dataset_dir = shutil.move(dataset_dir, self.config.root_dir)
+        # Move the dataset to the root directory specified in the configuration
+        dataset_dir = Path(dataset.location)
+        dataset_dir = shutil.move(dataset_dir, self.config.root_dir)
 
         # Construct the path to the YAML file
         yaml_data = os.path.join(str(dataset_dir), 'data.yaml')
-
-        # Write the dataset configuration to a YAML file
-        with open(yaml_data, 'r') as file:
-            data = yaml.safe_load(file)
-
-        # Update the paths in the YAML data to point to the new dataset directory
-        data['train'] = os.path.join(dataset_dir, 'train')
-        data['val'] = os.path.join(dataset_dir, 'val')
-        data['test'] = os.path.join(dataset_dir, 'test')
-
-        # Write the updated YAML data back to the file
-        with open(yaml_data, 'w') as file:
-            yaml.dump(data, file)
 
         return yaml_data
