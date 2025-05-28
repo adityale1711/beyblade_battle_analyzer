@@ -30,7 +30,8 @@ class ConfigurationManager:
             root_dir=config.root_dir,
             source_url=config.source_url,
             roboflow_api_key=config.roboflow_api_key,
-            dataset_version=config.dataset_version
+            dataset_version=config.dataset_version,
+            dataset_name=config.dataset_name
         )
 
         return data_ingestion_config

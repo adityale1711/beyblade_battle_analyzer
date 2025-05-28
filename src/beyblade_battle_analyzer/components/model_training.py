@@ -40,7 +40,8 @@ class ModelTraining:
                 imgsz=self.config.image_size,
                 project=str(self.config.root_dir),
                 name=str(self.config.project_name),
-                cos_lr=True
+                cos_lr=True,
+                device=0
             )
 
             return model

@@ -11,6 +11,7 @@ class DataIngestionConfig:
     source_url: str
     roboflow_api_key: str
     dataset_version: str
+    dataset_name: str
 
 
 @dataclass

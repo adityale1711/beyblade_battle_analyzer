@@ -5,6 +5,7 @@ data_ingestion:
   source_url: https://universe.roboflow.com/beyblade-djcpy/beyblade-dtd3d/dataset/14
   roboflow_api_key: r1etVuiNE3pRyNSKgAGM
   dataset_version: yolov11
+  dataset_name: Beyblade-14
 
 model_training:
   root_dir: artifacts/training

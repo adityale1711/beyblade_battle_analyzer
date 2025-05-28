@@ -28,17 +28,6 @@ class DataIngestion:
         Downloads the dataset from the specified roboflow URL and saves it to the root artifacts.
         Skips download if the dataset already exists in the root directory.
         """
-        # Check if dataset already exists
-        if os.path.exists(self.config.root_dir) and os.listdir(self.config.root_dir):
-            logger.info(f"Dataset already exists at {self.config.root_dir}. Skipping download.")
-            class DummyDataset:
-                def __init__(self, location):
-                    self.location = location
-            return DummyDataset(self.config.root_dir)
-
-        # Initialize Roboflow with the provided API key
-        rf = Roboflow(api_key=self.config.roboflow_api_key)
-
         # Parse the source URL to extract the path components
         parsed_url = urlparse(self.config.source_url)
 
@@ -57,10 +46,23 @@ class DataIngestion:
         else:
             logger.error('Invalid Roboflow URL format. Please provide a valid URL.')
 
-        # Log the workspace and project information
-        project = rf.workspace(rf_workspace).project(rf_project)
+        # Construct the destination path for the dataset
+        destination_path = os.path.join(self.config.root_dir, self.config.dataset_name)
 
-        # Log the project version
+        # Check if the dataset already exists
+        if os.path.exists(destination_path):
+            logger.info(f"Dataset already exists at {destination_path}. Skipping download.")
+            yaml_data = os.path.join(destination_path, 'data.yaml')
+            return yaml_data
+
+        # If dataset doesn't exist, proceed with download
+        logger.info(f"Downloading dataset to {destination_path}")
+
+        # Initialize Roboflow with the provided API key
+        rf = Roboflow(api_key=self.config.roboflow_api_key)
+
+        # Get the project and version
+        project = rf.workspace(rf_workspace).project(rf_project)
         version = project.version(self.rf_project_version)
 
         # Download the dataset using the specified version and save to root_dir
