@@ -16,3 +16,7 @@ model_training:
   patience: 25
   image_size: 640
   project_name: beyblade_detector
+
+analyze_video:
+  root_dir: artifacts/analyze_video
+  video_path: artifacts/analyze_video/inputs/out.mov

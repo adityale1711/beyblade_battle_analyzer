@@ -1,6 +1,7 @@
 from src.beyblade_battle_analyzer.constants import *
 from src.beyblade_battle_analyzer.utils.common import read_yaml, create_directories
-from src.beyblade_battle_analyzer.entity.config_entity import DataIngestionConfig, ModelTrainingConfig
+from src.beyblade_battle_analyzer.entity.config_entity import (DataIngestionConfig, ModelTrainingConfig,
+                                                               AnalyzeVideoConfig)
 
 
 class ConfigurationManager:
@@ -57,3 +58,19 @@ class ConfigurationManager:
         )
 
         return training_pipeline_config
+
+    def get_analyze_video_config(self) -> AnalyzeVideoConfig:
+        """
+        Retrieves the video analysis configuration.
+
+        :return: AnalyzeVideoConfig object containing the configuration settings.
+        """
+        config = self.config.analyze_video
+        create_directories([config.root_dir])
+
+        analyze_video_config = AnalyzeVideoConfig(
+            root_dir=config.root_dir,
+            video_path=config.video_path
+        )
+
+        return analyze_video_config

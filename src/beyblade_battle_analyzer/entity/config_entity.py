@@ -27,3 +27,12 @@ class ModelTrainingConfig:
     patience: int
     image_size: int
     project_name: str
+
+
+@dataclass
+class AnalyzeVideoConfig:
+    """
+    Configuration for video analysis.
+    """
+    root_dir: Path
+    video_path: str
