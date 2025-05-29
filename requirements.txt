@@ -6,4 +6,6 @@ ultralytics
 torch
 torchvision
 torchaudio
-opencv-python
+opencv-contrib-python-headless
+pandas
+numpy

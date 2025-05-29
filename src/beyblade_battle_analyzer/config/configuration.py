@@ -70,7 +70,9 @@ class ConfigurationManager:
 
         analyze_video_config = AnalyzeVideoConfig(
             root_dir=config.root_dir,
-            video_path=config.video_path
+            video_path=config.video_path,
+            model_path=config.model_path,
+            image_size=config.image_size
         )
 
         return analyze_video_config

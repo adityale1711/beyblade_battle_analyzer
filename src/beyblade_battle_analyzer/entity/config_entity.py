@@ -36,3 +36,5 @@ class AnalyzeVideoConfig:
     """
     root_dir: Path
     video_path: str
+    model_path: str
+    image_size: int

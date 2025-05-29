@@ -20,3 +20,5 @@ model_training:
 analyze_video:
   root_dir: artifacts/analyze_video
   video_path: artifacts/analyze_video/inputs/out.mov
+  model_path: artifacts/training/beyblade_detector/weights/best.pt
+  image_size: 640g
