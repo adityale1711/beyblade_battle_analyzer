@@ -2,7 +2,7 @@ import shutil
 
 from src.beyblade_battle_analyzer import logger
 from src.beyblade_battle_analyzer.config.configuration import ConfigurationManager
-from src.beyblade_battle_analyzer.components.analyze_video import AnalyzeVideo
+from src.beyblade_battle_analyzer.components.analyze_video import VideoAnalyzer
 
 STAGE_NAME = 'Analyze Video Stage'
 class VideoAnalyzerPipeline:
@@ -20,7 +20,7 @@ class VideoAnalyzerPipeline:
             analyze_video_config = config.get_analyze_video_config()
 
             # Log the video analyzer configuration
-            video_analyzer = AnalyzeVideo(config=analyze_video_config)
+            video_analyzer = VideoAnalyzer(config=analyze_video_config)
             video_analyzer.analyze()
 
         except Exception as e:
