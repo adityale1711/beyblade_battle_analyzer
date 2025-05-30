@@ -1,9 +1,10 @@
+import sys
 import argparse
 
 from src.beyblade_battle_analyzer import logger
 from src.beyblade_battle_analyzer.pipelines.data_ingestion_pipeline import DataIngestionPipeline
 from src.beyblade_battle_analyzer.pipelines.model_training_pipeline import ModelTrainingPipeline
-from src.beyblade_battle_analyzer.pipelines.video_analyzer_pipeline import VideoAnalyzerPipeline
+from src.beyblade_battle_analyzer.pipelines.video_processing_pipeline import VideoProcessingPipeline
 
 
 def parse_args():
@@ -36,8 +37,21 @@ def main():
             raise e
     elif args.pipeline == 'video_analyzer':
         try:
-            video_analyzer = VideoAnalyzerPipeline()
-            video_analyzer.run()
+            video_processor = VideoProcessingPipeline()
+            result = video_processor.run()
+
+            logger.info('Video processing completed successfully.')
+            logger.info(f"Frame processed: {result['frame_processed']}, ")
+
+            battle_summary = result['battle_summary']
+            if battle_summary.get('battle_duration'):
+                logger.info(f"Battle Duration: {battle_summary['battle_duration']:.2f} seconds")
+            if battle_summary.get('winner_id') is not None:
+                logger.info(f"Winner: Beyblade {battle_summary['winner_id']}")
+
+            logger.info('Exported Results:')
+            for file_type, file_path in result['export_results'].items():
+                logger.info(f"{file_type}: {file_path}")
         except Exception as e:
             logger.exception(f'Error occurred: {e}')
             raise e
@@ -47,4 +61,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -15,11 +15,21 @@ model_training:
   epochs: 100
   patience: 25
   image_size: 640
-  project_name: beyblade_detector
+  project_name: beyblade_detector-nano
 
-analyze_video:
-  root_dir: artifacts/analyze_video
-  output_dir: artifacts/analyze_video/outputs
-  video_path: artifacts/analyze_video/inputs/beyblade_trim.mov
-  model_path: artifacts/training/beyblade_detector/weights/best.pt
+video_processor:
+  root_dir: artifacts/video_processor
+  input_video_path: artifacts/video_processor/inputs/beyblade_trim.mov
+  output_video_path: artifacts/video_processor/outputs
+  arena_bounds: [100, 100, 500, 500]
+  visualization: True
+
+battle_analyzer:
+  root_dir: artifacts/battle_analyzer
+  movement_threshold: 0.5
+
+beyblade_detector:
+  root_dir: artifacts/beyblade_detector-nano
+  model_path: artifacts/training/beyblade_detector-nano/weights/best.pt
   image_size: 640
+  confidence_threshold: 0.5

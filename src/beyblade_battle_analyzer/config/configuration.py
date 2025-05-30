@@ -1,7 +1,8 @@
 from src.beyblade_battle_analyzer.constants import *
 from src.beyblade_battle_analyzer.utils.common import read_yaml, create_directories
 from src.beyblade_battle_analyzer.entity.config_entity import (DataIngestionConfig, ModelTrainingConfig,
-                                                               AnalyzeVideoConfig)
+                                                               VideoProcessorConfig, BattleAnalyzerConfig,
+                                                               BeybladeDetectorConfig, AnalyzeVideoConfig)
 
 
 class ConfigurationManager:
@@ -58,6 +59,59 @@ class ConfigurationManager:
         )
 
         return training_pipeline_config
+
+    def get_video_processor_config(self):
+        """
+        Retrieves the video processor configuration.
+
+        :return: VideoProcessorConfig object containing the configuration settings.
+        """
+        config = self.config.video_processor
+        create_directories([config.root_dir])
+
+        video_processor_config = VideoProcessorConfig(
+            root_dir=config.root_dir,
+            input_video_path=config.input_video_path,
+            output_video_path=config.output_video_path,
+            arena_bounds=config.arena_bounds,
+            visualization=config.visualization
+        )
+
+        return video_processor_config
+
+    def get_battle_analyzer_config(self) -> BattleAnalyzerConfig:
+        """
+        Retrieves the battle analyzer configuration.
+
+        :return: BattleAnalyzerConfig object containing the configuration settings.
+        """
+        config = self.config.battle_analyzer
+        create_directories([config.root_dir])
+
+        battle_analyzer_config = BattleAnalyzerConfig(
+            root_dir=config.root_dir,
+            movement_threshold=config.movement_threshold
+        )
+
+        return battle_analyzer_config
+
+    def get_beyblade_detector_config(self) -> BeybladeDetectorConfig:
+        """
+        Retrieves the Beyblade detector configuration.
+
+        :return: BeybladeDetectorConfig object containing the configuration settings.
+        """
+        config = self.config.beyblade_detector
+        create_directories([config.root_dir])
+
+        beyblade_detector_config = BeybladeDetectorConfig(
+            root_dir=config.root_dir,
+            model_path=config.model_path,
+            image_size=config.image_size,
+            confidence_threshold=config.confidence_threshold
+        )
+
+        return beyblade_detector_config
 
     def get_analyze_video_config(self) -> AnalyzeVideoConfig:
         """
