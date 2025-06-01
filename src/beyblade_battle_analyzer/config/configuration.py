@@ -1,4 +1,4 @@
-from src.beyblade_battle_analyzer.constants import *
+from src.beyblade_battle_analyzer.constants import CONFIG_FILE_PATH
 from src.beyblade_battle_analyzer.utils.common import read_yaml, create_directories
 from src.beyblade_battle_analyzer.entity.config_entity import (DataIngestionConfig, ModelTrainingConfig,
                                                                ArenaBoundsSelectorConfig, VideoProcessorConfig,
@@ -56,7 +56,8 @@ class ConfigurationManager:
             epochs=config.epochs,
             patience=config.patience,
             image_size=config.image_size,
-            project_name=config.project_name
+            project_name=config.project_name,
+            device=config.device
         )
 
         return training_pipeline_config
@@ -126,7 +127,8 @@ class ConfigurationManager:
             root_dir=config.root_dir,
             model_path=config.model_path,
             image_size=config.image_size,
-            confidence_threshold=config.confidence_threshold
+            confidence_threshold=config.confidence_threshold,
+            device=config.device
         )
 
         return beyblade_detector_config

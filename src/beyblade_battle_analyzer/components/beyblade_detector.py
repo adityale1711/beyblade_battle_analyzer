@@ -5,6 +5,7 @@ from typing import Tuple, List, Dict, Any
 from ultralytics import YOLO
 from src.beyblade_battle_analyzer import logger
 from src.beyblade_battle_analyzer.entity.config_entity import BeybladeDetectorConfig
+from src.beyblade_battle_analyzer.utils.device_manager import DeviceManager
 
 
 class BeybladeDetector:
@@ -16,11 +17,16 @@ class BeybladeDetector:
         """
         self.config = config
         self.model = None
+        
+        # Determine the device to use
+        self.device = DeviceManager.get_device(self.config.device)
 
         if self.config.model_path:
             try:
                 self.model = YOLO(self.config.model_path)
-                logger.info(f'Beyblade detection model loaded from {self.config.model_path}')
+                # Set the device for the model
+                self.model.to(self.device)
+                logger.info(f'Beyblade detection model loaded from {self.config.model_path} on device: {self.device}')
             except Exception as e:
                 logger.exception(f'Failed to load Beyblade detection model from {self.config.model_path}: {e}')
                 raise e

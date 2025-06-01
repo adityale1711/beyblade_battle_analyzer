@@ -16,9 +16,11 @@ def parse_args():
     :return: Parsed arguments.
     """
 
-    parser = argparse.ArgumentParser(description="Data Ingestion Script")
+    parser = argparse.ArgumentParser(description="Beyblade Battle Analyzer")
     parser.add_argument('--pipeline', type=str, choices=['training', 'video_analyzer'], default='video_analyzer',
-                        help='Specify the pipeline to run: training or inference.')
+                        help='Specify the pipeline to run: training or video_analyzer.')
+    parser.add_argument('--device', type=str, default=None,
+                        help='Device to use for inference/training. Options: auto, cpu, cuda, cuda:0, cuda:1, etc. Overrides config setting.')
 
     args, _ = parser.parse_known_args()
 
@@ -32,7 +34,7 @@ def main():
             data_ingestion = DataIngestionPipeline()
             data_ingestion.run()
 
-            model_training = ModelTrainingPipeline()
+            model_training = ModelTrainingPipeline(device_override=args.device)
             model_training.run()
         except Exception as e:
             logger.exception(f'Error occurred: {e}')
@@ -45,7 +47,7 @@ def main():
             logger.info('Arena bounds selection completed successfully.')
             logger.info(f'Arena bounds selected: {arena_bounds}')
 
-            video_processor = VideoProcessingPipeline(arena_bounds)
+            video_processor = VideoProcessingPipeline(arena_bounds, device_override=args.device)
             result = video_processor.run()
 
             logger.info('Video processing completed successfully.')

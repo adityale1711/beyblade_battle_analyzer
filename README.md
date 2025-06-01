@@ -114,9 +114,78 @@ This will:
 4. Export results to CSV/JSON
 5. Create annotated video output
 
+### Device Configuration
+
+Both training and inference support GPU/CPU device selection:
+
+```bash
+# Use automatic device selection (default)
+python main.py --pipeline training --device auto
+
+# Force CPU usage
+python main.py --pipeline training --device cpu
+
+# Use CUDA GPU (if available)
+python main.py --pipeline training --device cuda
+
+# Use specific GPU
+python main.py --pipeline training --device cuda:0
+python main.py --pipeline video_analyzer --device cuda:1
+```
+
+Device options:
+- `auto`: Automatically select best available device (GPU if available, otherwise CPU)
+- `cpu`: Force CPU usage
+- `cuda`: Use default CUDA GPU
+- `cuda:0`, `cuda:1`, etc.: Use specific GPU device
+
 ## ⚙️ Configuration
 
 Key configuration options in `config/config.yaml`:
+
+### Device Configuration
+
+The system supports flexible device selection for both training and inference:
+
+#### Configuration File
+Set the default device in `config/config.yaml`:
+```yaml
+model_training:
+  device: auto    # Options: auto, cpu, cuda, cuda:0, cuda:1, etc.
+
+beyblade_detector:
+  device: auto    # Options: auto, cpu, cuda, cuda:0, cuda:1, etc.
+```
+
+#### Command Line Override
+Override device settings at runtime:
+```bash
+# Use automatic device selection
+python main.py --pipeline training --device auto
+
+# Force CPU usage (useful for debugging or CPU-only systems)
+python main.py --pipeline training --device cpu
+
+# Use CUDA GPU if available
+python main.py --pipeline video_analyzer --device cuda
+
+# Use specific GPU device
+python main.py --pipeline training --device cuda:0
+python main.py --pipeline video_analyzer --device cuda:1
+```
+
+#### Device Options
+- `auto`: Automatically selects the best available device (CUDA GPU if available, otherwise CPU)
+- `cpu`: Forces CPU usage regardless of GPU availability
+- `cuda`: Uses the default CUDA device if available, falls back to CPU if not
+- `cuda:N`: Uses specific GPU device N (e.g., `cuda:0`, `cuda:1`, etc.)
+
+#### Device Detection
+The system automatically:
+- Detects CUDA availability and GPU count
+- Validates device configurations
+- Falls back to CPU if requested GPU is unavailable
+- Logs device information and selection reasoning
 
 ### Data Ingestion
 ```yaml
@@ -137,6 +206,7 @@ model_training:
   patience: 25
   image_size: 640
   project_name: beyblade_detector-nano
+  device: auto                # Device selection: auto/cpu/cuda/cuda:0/cuda:1
 ```
 
 ### Video Processing
@@ -153,6 +223,7 @@ beyblade_detector:
   model_path: artifacts/training/beyblade_detector-nano/weights/best.pt
   confidence_threshold: 0.5
   image_size: 640
+  device: auto                # Device selection: auto/cpu/cuda/cuda:0/cuda:1
 ```
 
 ## 📊 Battle Analysis Features

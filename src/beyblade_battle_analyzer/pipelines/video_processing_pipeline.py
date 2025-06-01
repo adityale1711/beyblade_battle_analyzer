@@ -6,8 +6,15 @@ from src.beyblade_battle_analyzer.components.video_processor import VideoProcess
 
 STAGE_NAME = 'Video Processing Stage'
 class VideoProcessingPipeline:
-    def __init__(self, arena_bounds):
+    def __init__(self, arena_bounds, device_override: str = None):
+        """
+        Initialize the VideoProcessingPipeline.
+        
+        :param arena_bounds: Arena bounds coordinates
+        :param device_override: Optional device override (e.g., 'cpu', 'cuda', 'auto')
+        """
         self.arena_bounds = arena_bounds
+        self.device_override = device_override
 
     def initiate_video_processing_pipeline(self):
         """
@@ -20,6 +27,11 @@ class VideoProcessingPipeline:
             video_processor_config = config.get_video_processor_config()
             battle_analyzer_config = config.get_battle_analyzer_config()
             beyblade_detector_config = config.get_beyblade_detector_config()
+            
+            # Override device if specified
+            if self.device_override:
+                logger.info(f"Overriding detector device setting from '{beyblade_detector_config.device}' to '{self.device_override}'")
+                beyblade_detector_config.device = self.device_override
 
             # Log the video analyzer configuration
             video_processing = VideoProcessor(

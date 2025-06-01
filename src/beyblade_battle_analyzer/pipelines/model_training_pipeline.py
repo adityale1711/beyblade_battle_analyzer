@@ -7,8 +7,13 @@ from src.beyblade_battle_analyzer.components.model_training import ModelTraining
 
 STAGE_NAME = "Model Training Stage"
 class ModelTrainingPipeline:
-    def __init__(self):
-        pass
+    def __init__(self, device_override: str = None):
+        """
+        Initialize the ModelTrainingPipeline.
+        
+        :param device_override: Optional device override (e.g., 'cpu', 'cuda', 'auto')
+        """
+        self.device_override = device_override
 
     def initiate_model_training(self):
         """
@@ -18,6 +23,11 @@ class ModelTrainingPipeline:
             # Initialize the configuration manager to read the configuration settings
             config_manager = ConfigurationManager()
             model_training_config = config_manager.get_model_training_config()
+            
+            # Override device if specified
+            if self.device_override:
+                logger.info(f"Overriding device setting from '{model_training_config.device}' to '{self.device_override}'")
+                model_training_config.device = self.device_override
 
             # Log the model training configuration
             model_training = ModelTraining(config=model_training_config)

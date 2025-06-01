@@ -28,6 +28,7 @@ class ModelTrainingConfig:
     patience: int
     image_size: int
     project_name: str
+    device: str  # Added device configuration
 
 @dataclass
 class ArenaBoundsSelectorConfig:
@@ -69,6 +70,7 @@ class BeybladeDetectorConfig:
     model_path: str
     image_size: int
     confidence_threshold: float
+    device: str  # Added device configuration
 
 
 @dataclass

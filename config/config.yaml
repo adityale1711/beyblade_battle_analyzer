@@ -16,6 +16,7 @@ model_training:
   patience: 25
   image_size: 640
   project_name: beyblade_detector-nano
+  device: auto  # Options: 'auto', 'cpu', 'cuda', 'cuda:0', 'cuda:1', etc.
 
 arena_bounds_selector:
   root_dir: artifacts/arena_bounds_selector
@@ -38,6 +39,7 @@ beyblade_detector:
   model_path: artifacts/training/beyblade_detector-nano/weights/best.pt
   image_size: 640
   confidence_threshold: 0.5
+  device: auto  # Options: 'auto', 'cpu', 'cuda', 'cuda:0', 'cuda:1', etc.
 
 battle_summary:
   root_dir: artifacts/battle_summary
