@@ -1,8 +1,9 @@
 from src.beyblade_battle_analyzer.constants import *
 from src.beyblade_battle_analyzer.utils.common import read_yaml, create_directories
 from src.beyblade_battle_analyzer.entity.config_entity import (DataIngestionConfig, ModelTrainingConfig,
-                                                               VideoProcessorConfig, BattleAnalyzerConfig,
-                                                               BeybladeDetectorConfig, AnalyzeVideoConfig)
+                                                               ArenaBoundsSelectorConfig, VideoProcessorConfig,
+                                                               BattleAnalyzerConfig, BeybladeDetectorConfig,
+                                                               AnalyzeVideoConfig)
 
 
 class ConfigurationManager:
@@ -59,6 +60,23 @@ class ConfigurationManager:
         )
 
         return training_pipeline_config
+
+    def get_arena_bounds_selector_config(self) -> ArenaBoundsSelectorConfig:
+        """
+        Retrieves the arena bounds selector configuration.
+
+        :return: ArenaBoundsSelectorConfig object containing the configuration settings.
+        """
+        config = self.config.arena_bounds_selector
+        create_directories([config.root_dir])
+
+        arena_bounds_selector_config = ArenaBoundsSelectorConfig(
+            root_dir=config.root_dir,
+            input_video_path=config.input_video_path,
+            window_name=config.window_name
+        )
+
+        return arena_bounds_selector_config
 
     def get_video_processor_config(self):
         """

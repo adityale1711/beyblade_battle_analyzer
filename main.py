@@ -5,6 +5,7 @@ from src.beyblade_battle_analyzer import logger
 from src.beyblade_battle_analyzer.pipelines.data_ingestion_pipeline import DataIngestionPipeline
 from src.beyblade_battle_analyzer.pipelines.model_training_pipeline import ModelTrainingPipeline
 from src.beyblade_battle_analyzer.pipelines.video_processing_pipeline import VideoProcessingPipeline
+from src.beyblade_battle_analyzer.pipelines.select_arena_bounds_pipeline import SelectArenaBoundsPipeline
 
 
 def parse_args():
@@ -37,7 +38,13 @@ def main():
             raise e
     elif args.pipeline == 'video_analyzer':
         try:
-            video_processor = VideoProcessingPipeline()
+            arena_bounds = SelectArenaBoundsPipeline()
+            arena_bounds = arena_bounds.run()
+
+            logger.info('Arena bounds selection completed successfully.')
+            logger.info(f'Arena bounds selected: {arena_bounds}')
+
+            video_processor = VideoProcessingPipeline(arena_bounds)
             result = video_processor.run()
 
             logger.info('Video processing completed successfully.')

@@ -29,6 +29,15 @@ class ModelTrainingConfig:
     image_size: int
     project_name: str
 
+@dataclass
+class ArenaBoundsSelectorConfig:
+    """
+    Configuration for arena bounds selection.
+    """
+    root_dir: Path
+    input_video_path: str
+    window_name: str
+
 
 @dataclass
 class VideoProcessorConfig:

@@ -14,7 +14,7 @@ from src.beyblade_battle_analyzer.components.beyblade_detector import BeybladeDe
 
 class VideoProcessor:
     def __init__(self, video_processor_config: VideoProcessorConfig, battle_analyzer_config: BattleAnalyzerConfig,
-                 beyblade_detector_config: BeybladeDetectorConfig):
+                 beyblade_detector_config: BeybladeDetectorConfig, arena_bounds):
         """
         Initializes the VideoProcessor with the specified configuration.
         :param video_processor_config:
@@ -25,6 +25,7 @@ class VideoProcessor:
         self.beyblade_detector_config = beyblade_detector_config
         self.output_video_path = Path(video_processor_config.output_video_path).mkdir(parents=True, exist_ok=True)
 
+        self.arena_bounds = arena_bounds
         self.detector = BeybladeDetector(self.beyblade_detector_config)
         self.data_manager = DataManager(str(self.video_processor_config.output_video_path))
         self.battle_analyzer = None
@@ -67,6 +68,10 @@ class VideoProcessor:
         # Start with the detection visualization
         annotated = self.detector.visualize_detections(frame, detections)
 
+        # Draw arena bounds if available
+        if self.arena_bounds:
+            self._draw_arena_bounds(annotated)
+
         state_text = f"State: {analysis['battle_state']}"
         cv2.putText(
             annotated, state_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2
@@ -89,6 +94,90 @@ class VideoProcessor:
         )
 
         return annotated
+
+    def _draw_arena_bounds(self, frame: np.ndarray) -> None:
+        """
+        Draws the arena bounds on the frame.
+
+        :param frame: The frame to draw the arena bounds on.
+        """
+        if self.arena_bounds:
+            x1, y1, x2, y2 = self.arena_bounds
+            
+            # Ensure coordinates are valid
+            x1, x2 = min(x1, x2), max(x1, x2)
+            y1, y2 = min(y1, y2), max(y1, y2)
+            
+            # Create an overlay for semi-transparent arena area
+            overlay = frame.copy()
+            
+            # Fill the arena area with a semi-transparent yellow
+            cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 255, 255), -1)
+            
+            # Blend the overlay with the original frame for transparency
+            alpha = 0.1  # Transparency level (0.0 = fully transparent, 1.0 = fully opaque)
+            cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+            
+            # Draw the arena boundary rectangle
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 255), 3)  # Yellow color, thick line
+            
+            # Add corner markers for better visibility
+            corner_size = 20
+            corner_thickness = 3
+            
+            # Top-left corner
+            cv2.line(frame, (x1, y1), (x1 + corner_size, y1), (0, 255, 255), corner_thickness)
+            cv2.line(frame, (x1, y1), (x1, y1 + corner_size), (0, 255, 255), corner_thickness)
+            
+            # Top-right corner
+            cv2.line(frame, (x2, y1), (x2 - corner_size, y1), (0, 255, 255), corner_thickness)
+            cv2.line(frame, (x2, y1), (x2, y1 + corner_size), (0, 255, 255), corner_thickness)
+            
+            # Bottom-left corner
+            cv2.line(frame, (x1, y2), (x1 + corner_size, y2), (0, 255, 255), corner_thickness)
+            cv2.line(frame, (x1, y2), (x1, y2 - corner_size), (0, 255, 255), corner_thickness)
+            
+            # Bottom-right corner
+            cv2.line(frame, (x2, y2), (x2 - corner_size, y2), (0, 255, 255), corner_thickness)
+            cv2.line(frame, (x2, y2), (x2, y2 - corner_size), (0, 255, 255), corner_thickness)
+            
+            # Add arena bounds label
+            arena_text = "Arena Bounds"
+            text_size = cv2.getTextSize(arena_text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
+            
+            # Position the text above the arena bounds
+            text_x = x1
+            text_y = y1 - 10 if y1 - 10 > text_size[1] else y1 + text_size[1] + 10
+            
+            # Draw background rectangle for the text
+            cv2.rectangle(frame, 
+                         (text_x - 5, text_y - text_size[1] - 5), 
+                         (text_x + text_size[0] + 5, text_y + 5), 
+                         (0, 0, 0), -1)
+            
+            # Draw the text
+            cv2.putText(frame, arena_text, (text_x, text_y), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+            
+            # Add dimensions text
+            width = x2 - x1
+            height = y2 - y1
+            dimensions_text = f"{width}x{height}px"
+            
+            # Position dimensions text at bottom right of arena
+            dim_text_size = cv2.getTextSize(dimensions_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
+            dim_x = x2 - dim_text_size[0] - 5
+            dim_y = y2 - 5
+            
+            # Draw background for dimensions text
+            cv2.rectangle(frame,
+                         (dim_x - 3, dim_y - dim_text_size[1] - 3),
+                         (dim_x + dim_text_size[0] + 3, dim_y + 3),
+                         (0, 0, 0), -1)
+            
+            # Draw dimensions text
+            cv2.putText(frame, dimensions_text, (dim_x, dim_y),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
     @staticmethod
     def progress_callback(current: int, total: int):
@@ -148,7 +237,7 @@ class VideoProcessor:
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         logger.info(f'Video properties - FPS: {fps}, Total Frames: {total_frames}, Width: {width}, Height: {height}')
 
-        self.battle_analyzer = BattleAnalyzer(self.battle_analyzer_config, fps, self.video_processor_config.arena_bounds)
+        self.battle_analyzer = BattleAnalyzer(self.battle_analyzer_config, fps, self.arena_bounds)
 
         video_writer = None
         if self.video_processor_config.visualization:

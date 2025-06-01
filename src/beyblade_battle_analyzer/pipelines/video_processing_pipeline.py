@@ -4,10 +4,10 @@ from src.beyblade_battle_analyzer import logger
 from src.beyblade_battle_analyzer.config.configuration import ConfigurationManager
 from src.beyblade_battle_analyzer.components.video_processor import VideoProcessor
 
-STAGE_NAME = 'Analyze Video Stage'
+STAGE_NAME = 'Video Processing Stage'
 class VideoProcessingPipeline:
-    def __init__(self):
-        pass
+    def __init__(self, arena_bounds):
+        self.arena_bounds = arena_bounds
 
     def initiate_video_processing_pipeline(self):
         """
@@ -22,7 +22,9 @@ class VideoProcessingPipeline:
             beyblade_detector_config = config.get_beyblade_detector_config()
 
             # Log the video analyzer configuration
-            video_processing = VideoProcessor(video_processor_config, battle_analyzer_config, beyblade_detector_config)
+            video_processing = VideoProcessor(
+                video_processor_config, battle_analyzer_config, beyblade_detector_config, self.arena_bounds
+            )
             video_processing = video_processing.process()
 
             return video_processing

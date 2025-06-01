@@ -17,9 +17,14 @@ model_training:
   image_size: 640
   project_name: beyblade_detector-nano
 
+arena_bounds_selector:
+  root_dir: artifacts/arena_bounds_selector
+  input_video_path: artifacts/input_video/beyblade_trim.mov
+  window_name: Arena Bounds Selector
+
 video_processor:
   root_dir: artifacts/video_processor
-  input_video_path: artifacts/video_processor/inputs/beyblade_trim.mov
+  input_video_path: artifacts/input_video/beyblade_trim.mov
   output_video_path: artifacts/video_processor/outputs
   arena_bounds: [100, 100, 500, 500]
   visualization: True
