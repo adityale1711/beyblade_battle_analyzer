@@ -10,6 +10,7 @@ from src.beyblade_battle_analyzer.entity.config_entity import (VideoProcessorCon
 from src.beyblade_battle_analyzer.components.data_manager import DataManager
 from src.beyblade_battle_analyzer.components.battle_analyzer import BattleAnalyzer
 from src.beyblade_battle_analyzer.components.beyblade_detector import BeybladeDetector
+from src.beyblade_battle_analyzer.components.ui_visualizer import UIVisualizer
 
 
 class VideoProcessor:
@@ -30,6 +31,9 @@ class VideoProcessor:
         self.detector = BeybladeDetector(self.beyblade_detector_config)
         self.data_manager = DataManager(str(self.video_processor_config.output_video_path))
         self.battle_analyzer = None
+        
+        # Initialize UI visualizer component
+        self.ui_visualizer = UIVisualizer(arena_bounds)
 
     def _process_frame(self, frame: np.ndarray, frame_number: int, video_path: str) -> Dict[str, Any]:
         """
@@ -84,7 +88,7 @@ class VideoProcessor:
 
     def _create_annotated_frame(self, frame: np.ndarray, detections: list, analysis: Dict[str, Any]) -> np.ndarray:
         """
-        Creates an annotated frame with detection results and analysis.
+        Creates an enhanced annotated frame with modern UI and comprehensive battle visualization.
 
         :param frame: The original video frame.
         :param detections: List of detected Beyblades.
@@ -95,119 +99,10 @@ class VideoProcessor:
         # Filter detections to only show those within arena bounds
         arena_detections = self._filter_detections_in_arena(detections)
         
-        # Start with the detection visualization (only arena detections)
-        annotated = self.detector.visualize_detections(frame, arena_detections)
-
-        # Draw arena bounds if available
-        if self.arena_bounds:
-            self._draw_arena_bounds(annotated)
-
-        state_text = f"State: {analysis['battle_state']}"
-        cv2.putText(
-            annotated, state_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2
-        )
-
-        active_text = f"Active Beyblades: {analysis['active_beyblades']}"
-        cv2.putText(
-            annotated, active_text, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2
-        )
-
-        if analysis['winner'] is not None:
-            winner_text = f"Winner: Beyblade {analysis['winner']}"
-            cv2.putText(
-                annotated, winner_text, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2
-            )
-
-        frame_text = f"Frame: {analysis['frame_number']}"
-        cv2.putText(
-            annotated, frame_text, (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2
-        )
+        # Use UI visualizer to create the annotated frame
+        annotated = self.ui_visualizer.create_annotated_frame(frame, arena_detections, analysis, self.battle_analyzer)
 
         return annotated
-
-    def _draw_arena_bounds(self, frame: np.ndarray) -> None:
-        """
-        Draws the arena bounds on the frame.
-
-        :param frame: The frame to draw the arena bounds on.
-        """
-        if self.arena_bounds:
-            x1, y1, x2, y2 = self.arena_bounds
-            
-            # Ensure coordinates are valid
-            x1, x2 = min(x1, x2), max(x1, x2)
-            y1, y2 = min(y1, y2), max(y1, y2)
-            
-            # Create an overlay for semi-transparent arena area
-            overlay = frame.copy()
-            
-            # Fill the arena area with a semi-transparent yellow
-            cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 255, 255), -1)
-            
-            # Blend the overlay with the original frame for transparency
-            alpha = 0.1  # Transparency level (0.0 = fully transparent, 1.0 = fully opaque)
-            cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
-            
-            # Draw the arena boundary rectangle
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 255), 3)  # Yellow color, thick line
-            
-            # Add corner markers for better visibility
-            corner_size = 20
-            corner_thickness = 3
-            
-            # Top-left corner
-            cv2.line(frame, (x1, y1), (x1 + corner_size, y1), (0, 255, 255), corner_thickness)
-            cv2.line(frame, (x1, y1), (x1, y1 + corner_size), (0, 255, 255), corner_thickness)
-            
-            # Top-right corner
-            cv2.line(frame, (x2, y1), (x2 - corner_size, y1), (0, 255, 255), corner_thickness)
-            cv2.line(frame, (x2, y1), (x2, y1 + corner_size), (0, 255, 255), corner_thickness)
-            
-            # Bottom-left corner
-            cv2.line(frame, (x1, y2), (x1 + corner_size, y2), (0, 255, 255), corner_thickness)
-            cv2.line(frame, (x1, y2), (x1, y2 - corner_size), (0, 255, 255), corner_thickness)
-            
-            # Bottom-right corner
-            cv2.line(frame, (x2, y2), (x2 - corner_size, y2), (0, 255, 255), corner_thickness)
-            cv2.line(frame, (x2, y2), (x2, y2 - corner_size), (0, 255, 255), corner_thickness)
-            
-            # Add arena bounds label
-            arena_text = "Arena Bounds"
-            text_size = cv2.getTextSize(arena_text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
-            
-            # Position the text above the arena bounds
-            text_x = x1
-            text_y = y1 - 10 if y1 - 10 > text_size[1] else y1 + text_size[1] + 10
-            
-            # Draw background rectangle for the text
-            cv2.rectangle(frame, 
-                         (text_x - 5, text_y - text_size[1] - 5), 
-                         (text_x + text_size[0] + 5, text_y + 5), 
-                         (0, 0, 0), -1)
-            
-            # Draw the text
-            cv2.putText(frame, arena_text, (text_x, text_y), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-            
-            # Add dimensions text
-            width = x2 - x1
-            height = y2 - y1
-            dimensions_text = f"{width}x{height}px"
-            
-            # Position dimensions text at bottom right of arena
-            dim_text_size = cv2.getTextSize(dimensions_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
-            dim_x = x2 - dim_text_size[0] - 5
-            dim_y = y2 - 5
-            
-            # Draw background for dimensions text
-            cv2.rectangle(frame,
-                         (dim_x - 3, dim_y - dim_text_size[1] - 3),
-                         (dim_x + dim_text_size[0] + 3, dim_y + 3),
-                         (0, 0, 0), -1)
-            
-            # Draw dimensions text
-            cv2.putText(frame, dimensions_text, (dim_x, dim_y),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
     @staticmethod
     def progress_callback(current: int, total: int):

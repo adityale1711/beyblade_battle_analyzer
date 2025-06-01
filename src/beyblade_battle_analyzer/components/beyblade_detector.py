@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 
 from typing import Tuple, List, Dict, Any
@@ -6,6 +5,7 @@ from ultralytics import YOLO
 from src.beyblade_battle_analyzer import logger
 from src.beyblade_battle_analyzer.entity.config_entity import BeybladeDetectorConfig
 from src.beyblade_battle_analyzer.utils.device_manager import DeviceManager
+from src.beyblade_battle_analyzer.components.ui_visualizer import UIVisualizer
 
 
 class BeybladeDetector:
@@ -17,6 +17,9 @@ class BeybladeDetector:
         """
         self.config = config
         self.model = None
+        
+        # Initialize UI visualizer for detection visualization
+        self.ui_visualizer = UIVisualizer()
         
         # Determine the device to use
         self.device = DeviceManager.get_device(self.config.device)
@@ -44,30 +47,13 @@ class BeybladeDetector:
 
     def visualize_detections(self, frame: np.ndarray, detections: List[Dict[str, Any]]) -> np.ndarray:
         """
-        Visualizes the detected Beyblades on the provided frame.
+        Visualizes the detected Beyblades on the provided frame using UIVisualizer.
 
         :param frame: Input image to visualize detections on.
         :param detections: List of detected Beyblades with bounding boxes and confidence scores.
         :return: Annotated image with visualized detections.
         """
-
-        # Create a copy of the frame to visualize detections
-        vis_frame = frame.copy()
-
-        for i, detection in enumerate(detections):
-            bbox = detection['bbox']
-            confidence = detection['confidence']
-            center = detection['center']
-
-            # Draw bounding box
-            cv2.rectangle(vis_frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 2)
-            # Draw center point
-            cv2.circle(vis_frame, center, 5, (255, 0, 0), -1)
-            # Put confidence text
-            cv2.putText(vis_frame, f'Beyblade {i + 1}: {confidence:.2f}', (bbox[0], bbox[1] - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-
-        return vis_frame
+        return self.ui_visualizer.visualize_simple_detections(frame, detections)
 
     def detect(self, frame: np.ndarray) -> List[Dict[str, Any]]:
         """
