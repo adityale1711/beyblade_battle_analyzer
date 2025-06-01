@@ -72,7 +72,7 @@ class BeybladeDetectorConfig:
 
 
 @dataclass
-class BeybladeTracker:
+class BeybladeTrackerConfig:
     """
     Configuration for Beyblade tracking.
     """
@@ -87,12 +87,8 @@ class BeybladeTracker:
 
 
 @dataclass
-class AnalyzeVideoConfig:
+class BattleSummaryConfig:
     """
-    Configuration for video analysis.
+    Configuration for battle summary.
     """
     root_dir: Path
-    output_dir: Path
-    video_path: str
-    model_path: str
-    image_size: int

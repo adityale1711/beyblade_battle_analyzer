@@ -3,7 +3,7 @@ from src.beyblade_battle_analyzer.utils.common import read_yaml, create_director
 from src.beyblade_battle_analyzer.entity.config_entity import (DataIngestionConfig, ModelTrainingConfig,
                                                                ArenaBoundsSelectorConfig, VideoProcessorConfig,
                                                                BattleAnalyzerConfig, BeybladeDetectorConfig,
-                                                               AnalyzeVideoConfig)
+                                                               BattleSummaryConfig)
 
 
 class ConfigurationManager:
@@ -131,21 +131,17 @@ class ConfigurationManager:
 
         return beyblade_detector_config
 
-    def get_analyze_video_config(self) -> AnalyzeVideoConfig:
+    def get_battle_summary_config(self) -> BattleSummaryConfig:
         """
-        Retrieves the video analysis configuration.
+        Retrieves the battle summary configuration.
 
-        :return: AnalyzeVideoConfig object containing the configuration settings.
+        :return: BattleSummaryConfig object containing the configuration settings.
         """
-        config = self.config.analyze_video
+        config = self.config.battle_summary
         create_directories([config.root_dir])
 
-        analyze_video_config = AnalyzeVideoConfig(
-            root_dir=config.root_dir,
-            output_dir=config.output_dir,
-            video_path=config.video_path,
-            model_path=config.model_path,
-            image_size=config.image_size
+        battle_summary_config = BattleSummaryConfig(
+            root_dir=config.root_dir
         )
 
-        return analyze_video_config
+        return battle_summary_config

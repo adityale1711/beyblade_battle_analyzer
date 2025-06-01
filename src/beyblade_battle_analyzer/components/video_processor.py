@@ -23,7 +23,8 @@ class VideoProcessor:
         self.video_processor_config = video_processor_config
         self.battle_analyzer_config = battle_analyzer_config
         self.beyblade_detector_config = beyblade_detector_config
-        self.output_video_path = Path(video_processor_config.output_video_path).mkdir(parents=True, exist_ok=True)
+        self.output_video_path = Path(video_processor_config.output_video_path)
+        self.output_video_path.mkdir(parents=True, exist_ok=True)
 
         self.arena_bounds = arena_bounds
         self.detector = BeybladeDetector(self.beyblade_detector_config)
@@ -55,6 +56,32 @@ class VideoProcessor:
             'analysis': frame_analysis,
         }
 
+    def _filter_detections_in_arena(self, detections: list) -> list:
+        """
+        Filters detections to only include those within arena bounds.
+
+        :param detections: List of all detected Beyblades.
+        :return: List of detections within arena bounds.
+        """
+        if not self.arena_bounds:
+            return detections
+        
+        filtered_detections = []
+        x1, y1, x2, y2 = self.arena_bounds
+        
+        for detection in detections:
+            bbox = detection.get('bbox', [])
+            if len(bbox) >= 4:
+                # Calculate center of bounding box
+                center_x = bbox[0] + bbox[2] / 2
+                center_y = bbox[1] + bbox[3] / 2
+                
+                # Check if center is within arena bounds
+                if x1 <= center_x <= x2 and y1 <= center_y <= y2:
+                    filtered_detections.append(detection)
+        
+        return filtered_detections
+
     def _create_annotated_frame(self, frame: np.ndarray, detections: list, analysis: Dict[str, Any]) -> np.ndarray:
         """
         Creates an annotated frame with detection results and analysis.
@@ -65,8 +92,11 @@ class VideoProcessor:
         :return: Annotated video frame.
         """
 
-        # Start with the detection visualization
-        annotated = self.detector.visualize_detections(frame, detections)
+        # Filter detections to only show those within arena bounds
+        arena_detections = self._filter_detections_in_arena(detections)
+        
+        # Start with the detection visualization (only arena detections)
+        annotated = self.detector.visualize_detections(frame, arena_detections)
 
         # Draw arena bounds if available
         if self.arena_bounds:

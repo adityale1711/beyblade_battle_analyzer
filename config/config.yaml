@@ -38,3 +38,6 @@ beyblade_detector:
   model_path: artifacts/training/beyblade_detector-nano/weights/best.pt
   image_size: 640
   confidence_threshold: 0.5
+
+battle_summary:
+  root_dir: artifacts/battle_summary
