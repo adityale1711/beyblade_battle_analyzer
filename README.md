@@ -33,26 +33,53 @@ The project follows a modular pipeline architecture:
 beyblade_battle_analyzer/
 ├── main.py                     # Main entry point
 ├── requirements.txt             # Python dependencies
+├── README.md                   # Project documentation
+├── .gitignore                  # Git ignore rules
 ├── config/
 │   └── config.yaml             # Configuration settings
 ├── src/beyblade_battle_analyzer/
+│   ├── __init__.py             # Package initialization
 │   ├── components/             # Core components
+│   │   ├── __init__.py
 │   │   ├── data_ingestion.py   # Dataset download from Roboflow
 │   │   ├── model_training.py   # YOLO model training
 │   │   ├── beyblade_detector.py # Object detection
 │   │   ├── battle_analyzer.py  # Battle logic and tracking
 │   │   ├── video_processor.py  # Video processing
 │   │   ├── battle_summary.py   # Battle result analysis
-│   │   └── data_manager.py     # Data export and management
+│   │   ├── data_manager.py     # Data export and management
+│   │   ├── arena_bounds_selector.py # Interactive arena selection
+│   │   └── ui_visualizer.py    # UI visualization components
 │   ├── pipelines/              # Processing pipelines
 │   ├── config/                 # Configuration management
+│   ├── constants/              # Project constants
 │   ├── entity/                 # Data classes and entities
 │   └── utils/                  # Utility functions
 ├── artifacts/                  # Generated outputs
 │   ├── training/               # Model weights and training data
+│   │   ├── beyblade_detector-nano/      # Nano model artifacts
+│   │   ├── beyblade_detector-small/     # Small model artifacts
+│   │   ├── beyblade_detector-medium/    # Medium model artifacts
+│   │   └── weights/            # Model weight files
 │   ├── video_processor/        # Processed videos and results
-│   └── input_video/           # Input video files
+│   ├── input_video/           # Input video files
+│   ├── data_ingestion/        # Downloaded datasets
+│   ├── arena_bounds_selector/ # Arena selection outputs
+│   ├── battle_analyzer/       # Battle analysis results
+│   ├── battle_summary/        # Battle summary outputs
+│   └── test_output/           # Test and debugging outputs
+├── docs/                      # Documentation and assets
+│   ├── beyblade_trim_result.mp4         # Sample result video
+│   ├── battle_state_machine_flowchart.png
+│   ├── velocity_calculation_flowchart.png
+│   ├── winner_scoring_algorithm_flowchart.png
+│   ├── movement_quality_analysis_flowchart.png
+│   ├── data_export_pipeline_flowchart.png
+│   ├── comprehensive_json_export_flowchart.png
+│   ├── quality_assurance_pipeline_flowchart.png
+│   └── tracker_status_validation_flowchart.png
 └── logs/                      # Application logs
+    └── beyblade_battle_analyzer.log
 ```
 
 ## 🚀 Installation
