@@ -51,6 +51,12 @@ beyblade_battle_analyzer/
 │   │   ├── arena_bounds_selector.py # Interactive arena selection
 │   │   └── ui_visualizer.py    # UI visualization components
 │   ├── pipelines/              # Processing pipelines
+│   │   ├── __init__.py
+│   │   ├── data_ingestion_pipeline.py      # Data download pipeline
+│   │   ├── model_training_pipeline.py      # Model training pipeline
+│   │   ├── video_processing_pipeline.py    # Video analysis pipeline
+│   │   ├── select_arena_bounds_pipeline.py # Arena selection pipeline
+│   │   └── battle_summary_pipeline.py      # Battle summary pipeline
 │   ├── config/                 # Configuration management
 │   ├── constants/              # Project constants
 │   ├── entity/                 # Data classes and entities
@@ -102,14 +108,17 @@ beyblade_battle_analyzer/
 ## 📋 Requirements
 
 - Python 3.8+
-- OpenCV
-- PyTorch
+- PyTorch & TorchVision
 - Ultralytics YOLO
+- OpenCV (contrib-python-headless)
 - Roboflow
 - Pandas
 - NumPy
+- PyYAML
+- Python-box
+- Ensure
 
-See `requirements.txt` for complete dependency list.
+See `requirements.txt` for complete dependency list with exact versions.
 
 ## 🎮 Usage
 
@@ -408,7 +417,7 @@ The system provides **three YOLO11 model variants** optimized for different use 
 | Model Variant | mAP50 | mAP50-95 | Speed | Use Case |
 |---------------|-------|----------|-------|----------|
 | **YOLO11n** (Nano) | **97.55%** | **84.35%** | Fastest | Real-time inference, edge devices |
-| **YOLO11s** (Small) | *Pending* | *Pending* | Balanced | General purpose applications |
+| **YOLO11s** (Small) | **97.11%** | **86.33%** | Balanced | General purpose applications |
 | **YOLO11m** (Medium) | **97.08%** | **85.55%** | Slower | Maximum accuracy requirements |
 
 ### Detailed Performance Analysis
@@ -420,6 +429,14 @@ The system provides **three YOLO11 model variants** optimized for different use 
 - **Convergence**: Stable convergence with early stopping at optimal performance
 - **Memory Footprint**: Minimal GPU memory usage (~1-2GB)
 - **Inference Speed**: 30+ FPS on modern GPUs, 10+ FPS on CPU
+
+#### YOLO11s (Small Model) - Balanced Performance
+- **Final mAP50**: 97.11% (IoU threshold 0.5)
+- **Final mAP50-95**: 86.33% (IoU thresholds 0.5-0.95)
+- **Training Configuration**: 100 epochs, 640x640 input resolution
+- **Performance**: Best balance of speed and accuracy for most applications
+- **Memory Footprint**: Moderate GPU memory usage (~2-4GB)
+- **Inference Speed**: 20-30 FPS on modern GPUs, 5-8 FPS on CPU
 
 #### YOLO11m (Medium Model) - High Accuracy
 - **Final mAP50**: 97.08% (IoU threshold 0.5)
@@ -447,15 +464,19 @@ The system provides **three YOLO11 model variants** optimized for different use 
 - **Choose YOLO11n**: 97.55% mAP50 with fastest inference speed
 - **Ideal for**: Live battle streaming, edge devices, resource-constrained environments
 
+#### For Balanced Performance
+- **Choose YOLO11s**: 97.11% mAP50 with 86.33% mAP50-95 for optimal speed/accuracy balance
+- **Ideal for**: Most production applications, general-purpose analysis, moderate hardware
+
 #### For Maximum Accuracy
-- **Choose YOLO11m**: 85.55% mAP50-95 for highest precision
+- **Choose YOLO11m**: 85.55% mAP50-95 for highest precision (though slightly lower mAP50)
 - **Ideal for**: Research applications, detailed analysis, post-processing workflows
 
 #### Performance vs. Accuracy Trade-off
-Both models deliver **>97% mAP50**, indicating exceptional Beyblade detection capability. The choice depends on:
+All models deliver **>97% mAP50**, indicating exceptional Beyblade detection capability. The choice depends on:
 - **Hardware constraints**: Nano for limited resources
-- **Real-time requirements**: Nano for live applications
-- **Precision needs**: Medium for research-grade accuracy
+- **Real-time requirements**: Nano for live applications, Small for balanced performance
+- **Precision needs**: Small for best overall performance, Medium for research-grade precision
 
 ## 🔍 Data Generation and Battle Analysis Logic
 
@@ -566,7 +587,14 @@ This comprehensive data generation system provides researchers and enthusiasts w
 ## 📝 Logging
 
 Comprehensive logging system:
-- Application logs in `logs/beyblade_battle_analyzer.log`
-- Pipeline progress tracking
-- Error handling and debugging information
-- Performance metrics
+- **Application logs**: `logs/beyblade_battle_analyzer.log`
+- **Pipeline progress**: Real-time tracking of processing stages
+- **Error handling**: Detailed error messages and stack traces
+- **Performance metrics**: Device usage, processing speeds, and memory consumption
+- **Debug information**: Frame-by-frame analysis and detection details
+
+### Log Levels
+- **INFO**: General progress and status updates
+- **WARNING**: Non-critical issues that don't stop processing
+- **ERROR**: Critical errors that stop execution
+- **DEBUG**: Detailed diagnostic information (enable in development)
