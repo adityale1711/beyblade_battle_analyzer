@@ -269,6 +269,33 @@ beyblade_detector:
   - Battle state indicators
   - Real-time statistics overlay
 
+## 🎬 Results Demonstration
+
+### Sample Battle Analysis Video
+
+The system produces comprehensive annotated videos showing real-time battle analysis. Here's an example of the processed output:
+
+> **📁 Video Location**: The sample result video `beyblade_trim_result.mp4` is available in the `docs/` directory  
+> **📏 File Size**: ~18MB (download locally to view the full quality demonstration)  
+> **🎬 Format**: MP4 with H.264 encoding for broad compatibility
+
+#### What You'll See in the Output Video:
+- **🎯 Real-time Detection**: Precise bounding boxes around each Beyblade
+- **🏟️ Arena Boundaries**: Clearly defined battle arena with visual markers
+- **📊 Live Statistics**: Real-time battle state, timer, and performance metrics
+- **🔍 Tracking Visualization**: Persistent ID tracking across frames
+- **🏆 Winner Analysis**: Dynamic scoring and winner prediction
+- **📈 Movement Patterns**: Velocity indicators and motion trails
+
+#### Technical Features Demonstrated:
+- **Multi-object Detection**: Simultaneous tracking of multiple Beyblades
+- **State Machine Visualization**: Clear indication of battle phases (STARTING → ACTIVE → ENDING → FINISHED)
+- **Performance Metrics**: Live calculation of movement quality and battle statistics
+- **Arena Compliance**: Filtering and validation of detections within defined boundaries
+- **Export Ready Data**: Frame-by-frame data collection for CSV/JSON exports
+
+This example showcases the system's capability to provide **professional-grade battle analysis** suitable for tournaments, research, and enthusiast applications.
+
 ## 🎯 Arena Bounds Selection
 
 Interactive tool for defining battle arena:
